@@ -1,2 +1,3 @@
 # CrimsonLambda
-Having fun with AWS Lambda and S3
+
+Our AWS Lambda & S3 playground

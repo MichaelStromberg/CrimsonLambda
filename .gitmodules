@@ -1,0 +1,3 @@
+[submodule "Nirvana"]
+	path = Nirvana
+	url = git@git.illumina.com:Bioinformatics/Nirvana.git
