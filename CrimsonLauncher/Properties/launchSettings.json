@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CrimsonLauncher": {
+      "commandName": "Project",
+      "commandLineArgs": "2"
+    }
+  }
+}

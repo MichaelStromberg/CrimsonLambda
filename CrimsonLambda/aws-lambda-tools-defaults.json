@@ -11,10 +11,11 @@
     "configuration" : "Release",
     "framework"     : "netcoreapp2.0",
     "function-runtime" : "dotnetcore2.0",
-    "function-memory-size" : 2048,
+    "function-memory-size" : 1024,
     "function-timeout"     : 300,
     "function-handler"     : "CrimsonLambda::CrimsonLambda.CrimsonMain::FunctionHandler",
     "function-name"        : "MSCrimsonLambda",
-    "function-role"        : "arn:aws:iam::926576729767:role/lambda_exec_MSCrimsonLambda",
+    "function-role"        : "arn:aws:iam::926576729767:role/lambda_exec_MSCrimsonLambda-1",
     "tracing-mode"         : "PassThrough",
+    "environment-variables" : ""
 }

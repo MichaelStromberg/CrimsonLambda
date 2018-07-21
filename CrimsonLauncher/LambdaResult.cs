@@ -1,4 +1,4 @@
-﻿namespace CrimsonLambda
+﻿namespace CrimsonLauncher
 {
     public class LambdaResult
     {

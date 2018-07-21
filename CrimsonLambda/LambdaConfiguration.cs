@@ -2,6 +2,6 @@
 {
     public class LambdaConfiguration
     {
-        public string VcfPath;
+        public int NumThreads;
     }
 }
