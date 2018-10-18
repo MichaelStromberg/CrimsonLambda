@@ -1,41 +1,40 @@
 ﻿using System;
-using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 
 namespace CrimsonLambda
 {
     public sealed class RemoteFile
     {
-        public readonly string Url;
+        private readonly string _url;
         public long NumBytes;
 
+        private static readonly HttpClient HttpClient = new HttpClient();
         static RemoteFile() => ServicePointManager.DefaultConnectionLimit = int.MaxValue;
 
-        public RemoteFile(string url) => Url = url;
+        public RemoteFile(string url) => _url = url;
 
         public void Download(ILambdaLogger logger)
         {
-            logger.LogLine($"- start download: {Url}");
+            logger.LogLine($"- start download: {_url}");
             var benchmark = new Benchmark();
 
-            while (!SuccessfulDownload()) logger.LogLine($"- requeueing download of the {Url}");
+            while (!SuccessfulDownloadAsync().Result) logger.LogLine($"- requeueing download of the {_url}");
 
             (string MegabytesPerSecond, double NumMilliseconds) results = benchmark.GetMegabytesPerSecond(NumBytes);
-            logger.LogLine($"- finished download: {Url}, throughput: {results.MegabytesPerSecond} total ms: {results.NumMilliseconds}");
+            logger.LogLine($"- finished download: {_url}, throughput: {results.MegabytesPerSecond} total ms: {results.NumMilliseconds}");
         }
 
-        private bool SuccessfulDownload()
+        private async Task<bool> SuccessfulDownloadAsync()
         {
             try
             {
-                WebRequest request = WebRequest.Create(Url);
-                var response = (HttpWebResponse)request.GetResponse();
-
                 long numBytes = 0;
                 var buffer    = new byte[8 * 1024 * 1024];
 
-                using (Stream stream = response.GetResponseStream())
+                using (var stream = await HttpClient.GetStreamAsync(_url))
                 {
                     while (true)
                     {
