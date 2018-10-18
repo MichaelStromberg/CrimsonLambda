@@ -16,14 +16,14 @@ namespace CrimsonLauncher
 
         public Lambda(int id) => Id = id;
 
-        public void Execute(string jsonConfiguration)
+        public void Execute(string jsonConfiguration, RegionEndpoint regionEndpoint)
         {
             Console.WriteLine($"- execute: {Id}");
 
             var config = new AmazonLambdaConfig
             {
                 Timeout        = new TimeSpan(0, 5, 0),
-                RegionEndpoint = RegionEndpoint.USEast1
+                RegionEndpoint = regionEndpoint
             };
 
             var client = new AmazonLambdaClient(new StoredProfileAWSCredentials("Michael"), config);

@@ -9,8 +9,12 @@ namespace CrimsonLambda
 {
     public class CrimsonMain
     {
+        private readonly ColdStartData _data = GetColdStartData();
+
         public LambdaResult FunctionHandler(LambdaConfiguration config, ILambdaContext context)
         {
+            DumpColdData(context.Logger, "before handler");
+
             long numBytes = 0;
             (string MegabytesPerSecond, double NumMilliseconds) results = ("", 0.0);
 
@@ -22,14 +26,15 @@ namespace CrimsonLambda
                     new RemoteFile("http://illumina-annotation.s3.amazonaws.com/SA/44/GRCh37/chr12.nsa"),
                     new RemoteFile("http://illumina-annotation.s3.amazonaws.com/SA/44/GRCh37/chr13.nsa"),
                     new RemoteFile("http://illumina-annotation.s3.amazonaws.com/SA/44/GRCh37/chr14.nsa"),
-                    new RemoteFile("http://illumina-annotation.s3.amazonaws.com/SA/44/GRCh37/chr15.nsa"),
-                    new RemoteFile("http://illumina-annotation.s3.amazonaws.com/SA/44/GRCh37/chr16.nsa"),
-                    new RemoteFile("http://illumina-annotation.s3.amazonaws.com/SA/44/GRCh37/chr17.nsa")
+                    //new RemoteFile("http://illumina-annotation.s3.amazonaws.com/SA/44/GRCh37/chr15.nsa"),
+                    //new RemoteFile("http://illumina-annotation.s3.amazonaws.com/SA/44/GRCh37/chr16.nsa"),
+                    //new RemoteFile("http://illumina-annotation.s3.amazonaws.com/SA/44/GRCh37/chr17.nsa")
                 };
 
                 var benchmark = new Benchmark();
 
                 urls.Execute(context.Logger, "downloads", file => file.Download(context.Logger), config.NumThreads);
+                _data.NumUrlsLoaded += urls.Count;
                 
                 foreach (RemoteFile url in urls) numBytes += url.NumBytes;
 
@@ -45,8 +50,17 @@ namespace CrimsonLambda
                 context.Logger.LogLine(e.StackTrace);
             }
 
+            DumpColdData(context.Logger, "after handler");
 
             return new LambdaResult { NumBytes = numBytes, MegabytesPerSecond = results.MegabytesPerSecond, NumMilliseconds = results.NumMilliseconds };
         }
+
+        private void DumpColdData(ILambdaLogger logger, string description)
+        {
+            logger.LogLine($"cold start status ({description}):");
+            logger.LogLine(_data.ToString());
+        }
+
+        private static ColdStartData GetColdStartData() => new ColdStartData();
     }
 }
